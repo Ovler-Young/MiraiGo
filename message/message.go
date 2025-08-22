@@ -592,14 +592,9 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			var url string
 			switch {
 			case img.PbReserve != nil && img.PbReserve.Url.Unwrap() != "":
-				// This is the new protocol case, which contains an rkey.
-				rKeyRaw := img.PbReserve.Url.Unwrap()
-				// Sanitize the rkey value, which often comes in the format "&rkey=...".
-				rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
-				// FilePath serves as the fileid.
-				fileID := img.FilePath.Unwrap()
-				// Construct the correct URL using the reliable multimedia endpoint.
-				url = fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
+				rkey := img.PbReserve.Url.Unwrap()
+				fileID := img.DownloadPath.Unwrap()
+				url = fmt.Sprintf("https://c2cpicdw.qpic.cn/download?appid=1406&fileid=%s%s", fileID, rkey)
 			case img.OrigUrl.Unwrap() != "":
 				url = "https://c2cpicdw.qpic.cn" + img.OrigUrl.Unwrap()
 			default:
@@ -622,7 +617,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 					Md5:     img.PicMd5,
 				})
 			}
-
 		}
 
 		if elem.QQWalletMsg != nil && elem.QQWalletMsg.AioBody != nil {
@@ -681,14 +675,17 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			case 48:
 				img := &msg.PbMultiMediaElement{}
 				_ = proto.Unmarshal(elem.CommonElem.PbElem, img)
+				domain := img.Elem1.Data.Domain.Unwrap()
 
 				if img.Elem2.Data.Friend != nil {
 					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
-					rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
-					fileID := img.Elem1.Meta.FilePath.Unwrap()
-					url := fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
+					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
+					// The ImgURL field is the correct source for the fileid
+					fileID := img.Elem1.Data.ImgURL.Unwrap()
+					// Construct the URL with the correct path and appid for friend images (1406).
+					url := fmt.Sprintf("https://%s/download?appid=1406&fileid=%s&rkey=%s", domain, fileID, rKey)
 					res = append(res, &FriendImageElement{
-						ImageId: fileID,
+						ImageId: img.Elem1.Meta.FilePath.Unwrap(),
 						Size:    img.Elem1.Meta.Data.FileLen.Unwrap(),
 						Url:     url,
 						Md5:     img.Elem1.Meta.Data.PicMd5,
@@ -697,11 +694,13 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				}
 				if img.Elem2.Data.Group != nil {
 					rKeyRaw := img.Elem2.Data.Group.RKey.Unwrap()
-					rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
-					fileID := img.Elem1.Meta.FilePath.Unwrap()
-					url := fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
+					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
+					// The ImgURL field is the correct source for the fileid
+					fileID := img.Elem1.Data.ImgURL.Unwrap()
+					// Construct the URL with the correct path and appid for group images (1407).
+					url := fmt.Sprintf("https://%s/download?appid=1407&fileid=%s&rkey=%s", domain, fileID, rKey)
 					res = append(res, &GroupImageElement{
-						ImageId: fileID,
+						ImageId: img.Elem1.Meta.FilePath.Unwrap(),
 						Size:    img.Elem1.Meta.Data.FileLen.Unwrap(),
 						Url:     url,
 						Md5:     img.Elem1.Meta.Data.PicMd5,
@@ -709,7 +708,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 					newImg = true
 				}
 			}
-
 		}
 	}
 	return res
