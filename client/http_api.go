@@ -14,10 +14,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/Mrs4s/MiraiGo/binary"
-	"github.com/Mrs4s/MiraiGo/client/pb/richmedia"
-	"github.com/Mrs4s/MiraiGo/internal/proto"
-	"github.com/Mrs4s/MiraiGo/utils"
+	"github.com/Ovler-Young/MiraiGo/binary"
+	"github.com/Ovler-Young/MiraiGo/client/pb/richmedia"
+	"github.com/Ovler-Young/MiraiGo/internal/proto"
+	"github.com/Ovler-Young/MiraiGo/utils"
 )
 
 /* -------- GroupHonorInfo -------- */

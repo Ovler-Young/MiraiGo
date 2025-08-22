@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Mrs4s/MiraiGo/binary"
-	"github.com/Mrs4s/MiraiGo/client/internal/auth"
-	"github.com/Mrs4s/MiraiGo/client/pb"
-	"github.com/Mrs4s/MiraiGo/internal/proto"
-	"github.com/Mrs4s/MiraiGo/wrapper"
+	"github.com/Ovler-Young/MiraiGo/binary"
+	"github.com/Ovler-Young/MiraiGo/client/internal/auth"
+	"github.com/Ovler-Young/MiraiGo/client/pb"
+	"github.com/Ovler-Young/MiraiGo/internal/proto"
+	"github.com/Ovler-Young/MiraiGo/wrapper"
 	"github.com/pkg/errors"
 )
 
