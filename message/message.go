@@ -635,6 +635,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			res = append(res, NewFace(elem.Face.Index.Unwrap()))
 		}
 		if elem.CommonElem != nil {
+			fmt.Printf(elem.CommonElem)
 			switch elem.CommonElem.ServiceType.Unwrap() {
 			case 3:
 				flash := &msg.MsgElemInfoServtype3{}
@@ -676,7 +677,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				img := &msg.PbMultiMediaElement{}
 				_ = proto.Unmarshal(elem.CommonElem.PbElem, img)
 				domain := img.Elem1.Data.Domain.Unwrap()
-				fmt.Printf("%+v\n", img)
+				fmt.Printf(img)
 
 				if img.Elem2.Data.Friend != nil {
 					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
