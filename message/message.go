@@ -592,7 +592,14 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			var url string
 			switch {
 			case img.PbReserve != nil && img.PbReserve.Url.Unwrap() != "":
-				url = fmt.Sprintf("https://c2cpicdw.qpic.cn%s&spec=0&rf=naio", img.PbReserve.Url.Unwrap())
+				// This is the new protocol case, which contains an rkey.
+				rKeyRaw := img.PbReserve.Url.Unwrap()
+				// Sanitize the rkey value, which often comes in the format "&rkey=...".
+				rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
+				// FilePath serves as the fileid.
+				fileID := img.FilePath.Unwrap()
+				// Construct the correct URL using the reliable multimedia endpoint.
+				url = fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
 			case img.OrigUrl.Unwrap() != "":
 				url = "https://c2cpicdw.qpic.cn" + img.OrigUrl.Unwrap()
 			default:
@@ -674,14 +681,14 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			case 48:
 				img := &msg.PbMultiMediaElement{}
 				_ = proto.Unmarshal(elem.CommonElem.PbElem, img)
-				domain := img.Elem1.Data.Domain.Unwrap()
-				imgURL := img.Elem1.Data.ImgURL.Unwrap()
 
 				if img.Elem2.Data.Friend != nil {
-					rKey := img.Elem2.Data.Friend.RKey.Unwrap()
-					url := fmt.Sprintf("https://%s%s%s&spec=0&rf=naio", domain, imgURL, rKey)
+					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
+					rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
+					fileID := img.Elem1.Meta.FilePath.Unwrap()
+					url := fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
 					res = append(res, &FriendImageElement{
-						ImageId: img.Elem1.Meta.FilePath.Unwrap(),
+						ImageId: fileID,
 						Size:    img.Elem1.Meta.Data.FileLen.Unwrap(),
 						Url:     url,
 						Md5:     img.Elem1.Meta.Data.PicMd5,
@@ -689,10 +696,12 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 					newImg = true
 				}
 				if img.Elem2.Data.Group != nil {
-					rKey := img.Elem2.Data.Group.RKey.Unwrap()
-					url := fmt.Sprintf("https://%s%s%s&spec=0&rf=naio", domain, imgURL, rKey)
+					rKeyRaw := img.Elem2.Data.Group.RKey.Unwrap()
+					rKey := strings.TrimPrefix(rKeyRaw, "&rkey=")
+					fileID := img.Elem1.Meta.FilePath.Unwrap()
+					url := fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s&rkey=%s", fileID, rKey)
 					res = append(res, &GroupImageElement{
-						ImageId: img.Elem1.Meta.FilePath.Unwrap(),
+						ImageId: fileID,
 						Size:    img.Elem1.Meta.Data.FileLen.Unwrap(),
 						Url:     url,
 						Md5:     img.Elem1.Meta.Data.PicMd5,
