@@ -635,7 +635,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			res = append(res, NewFace(elem.Face.Index.Unwrap()))
 		}
 		if elem.CommonElem != nil {
-			fmt.Printf("elem.commonElem %s\n", elem.CommonElem.ToString())
+			fmt.Printf("elem.commonElem %s\n", elem.CommonElem)
 			switch elem.CommonElem.ServiceType.Unwrap() {
 			case 3:
 				flash := &msg.MsgElemInfoServtype3{}
