@@ -676,6 +676,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				img := &msg.PbMultiMediaElement{}
 				_ = proto.Unmarshal(elem.CommonElem.PbElem, img)
 				domain := img.Elem1.Data.Domain.Unwrap()
+				fmt.Printf(img.Unwrap())
 
 				if img.Elem2.Data.Friend != nil {
 					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
