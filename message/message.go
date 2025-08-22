@@ -635,7 +635,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			res = append(res, NewFace(elem.Face.Index.Unwrap()))
 		}
 		if elem.CommonElem != nil {
-			fmt.Printf("elem.commonElem %s\n", elem.CommonElem)
 			switch elem.CommonElem.ServiceType.Unwrap() {
 			case 3:
 				flash := &msg.MsgElemInfoServtype3{}
@@ -677,15 +676,12 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				img := &msg.PbMultiMediaElement{}
 				_ = proto.Unmarshal(elem.CommonElem.PbElem, img)
 				domain := img.Elem1.Data.Domain.Unwrap()
-				fmt.Printf("img: %s\n", img)
 
 				if img.Elem2.Data.Friend != nil {
 					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
 					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
-					fmt.Printf("rKey: %s\n", rKey)
 					// The ImgURL field is the correct source for the fileid
 					fileID := img.Elem1.Data.ImgURL.Unwrap()
-					fmt.Printf("fileID: %s\n", fileID)
 					// Construct the URL with the correct path and appid for friend images (1406).
 					url := fmt.Sprintf("https://%s/download?appid=1406&fileid=%s&rkey=%s", domain, fileID, rKey)
 					res = append(res, &FriendImageElement{
@@ -699,10 +695,8 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				if img.Elem2.Data.Group != nil {
 					rKeyRaw := img.Elem2.Data.Group.RKey.Unwrap()
 					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
-					fmt.Printf("rKey: %s\n", rKey)
 					// The ImgURL field is the correct source for the fileid
 					fileID := img.Elem1.Data.ImgURL.Unwrap()
-					fmt.Printf("fileID: %s\n", fileID)
 					// Construct the URL with the correct path and appid for group images (1407).
 					url := fmt.Sprintf("https://%s/download?appid=1407&fileid=%s&rkey=%s", domain, fileID, rKey)
 					res = append(res, &GroupImageElement{
