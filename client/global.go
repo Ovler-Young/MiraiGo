@@ -143,11 +143,30 @@ func getSSOAddress(device *auth.Device) ([]netip.AddrPort, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch server list")
 	}
+	
+	if len(rsp) == 0 {
+		return nil, errors.New("empty response from server list endpoint")
+	}
+
+	decrypted := tea.Decrypt(rsp)
+	if len(decrypted) < 4 {
+		return nil, errors.Errorf("invalid server response: decrypted data too short (got %d bytes, need at least 4)", len(decrypted))
+	}
+
 	rspPkt := &jce.RequestPacket{}
 	data := &jce.RequestDataVersion3{}
-	rspPkt.ReadFrom(jce.NewJceReader(tea.Decrypt(rsp)[4:]))
+	rspPkt.ReadFrom(jce.NewJceReader(decrypted[4:]))
 	data.ReadFrom(jce.NewJceReader(rspPkt.SBuffer))
-	reader := jce.NewJceReader(data.Map["HttpServerListRes"][1:])
+
+	httpServerListRes, exists := data.Map["HttpServerListRes"]
+	if !exists {
+		return nil, errors.New("HttpServerListRes not found in server response")
+	}
+	if len(httpServerListRes) < 1 {
+		return nil, errors.New("HttpServerListRes data too short")
+	}
+
+	reader := jce.NewJceReader(httpServerListRes[1:])
 	servers := reader.ReadSsoServerInfos(2)
 	adds := make([]netip.AddrPort, 0, len(servers))
 	for _, s := range servers {
