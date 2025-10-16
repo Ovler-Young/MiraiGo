@@ -594,11 +594,11 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			case img.PbReserve != nil && img.PbReserve.Url.Unwrap() != "":
 				rkey := img.PbReserve.Url.Unwrap()
 				fileID := img.DownloadPath.Unwrap()
-				url = fmt.Sprintf("https://c2cpicdw.qpic.cn/download?appid=1406&fileid=%s%s", fileID, rkey)
+				url = fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s%s", fileID, rkey)
 			case img.OrigUrl.Unwrap() != "":
-				url = "https://c2cpicdw.qpic.cn" + img.OrigUrl.Unwrap()
+				url = "https://multimedia.nt.qq.com.cn" + img.OrigUrl.Unwrap()
 			default:
-				url = "https://c2cpicdw.qpic.cn/offpic_new/0"
+				url = "https://multimedia.nt.qq.com.cn/offpic_new/0"
 				downloadPath := img.ResId.Unwrap()
 				if img.DownloadPath.Unwrap() != "" {
 					downloadPath = img.DownloadPath.Unwrap()
