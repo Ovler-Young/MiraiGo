@@ -522,7 +522,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				continue
 			}
 
-			fmt.Printf("[DEBUG elem] %+v\n", elem)
+			fmt.Printf("[DEBUG CustomFace] %+v\n", *elem.CustomFace)
 
 			var url string
 			if elem.CustomFace.OrigUrl.Unwrap() == "" {
