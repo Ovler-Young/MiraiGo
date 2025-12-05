@@ -521,11 +521,20 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			if len(elem.CustomFace.Md5) == 0 {
 				continue
 			}
+			// Build URL using new download API format with FileId
+			fileId := elem.CustomFace.FileId.Unwrap()
 			var url string
-			if elem.CustomFace.OrigUrl.Unwrap() == "" {
-				url = fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/0/0-0-%X/0?term=2", elem.CustomFace.Md5)
-			} else {
+			if fileId != 0 {
+				url = fmt.Sprintf("https://gchat.qpic.cn/download?appid=1407&fileid=%d", fileId)
+				if GetRKey != nil {
+					if rkey := GetRKey(true); rkey != "" {
+						url += "&rkey=" + rkey
+					}
+				}
+			} else if elem.CustomFace.OrigUrl.Unwrap() != "" {
 				url = "https://gchat.qpic.cn" + elem.CustomFace.OrigUrl.Unwrap()
+			} else {
+				url = fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/0/0-0-%X/0?term=2", elem.CustomFace.Md5)
 			}
 			if strings.Contains(elem.CustomFace.OrigUrl.Unwrap(), "qmeet") {
 				res = append(res, &GuildImageElement{
