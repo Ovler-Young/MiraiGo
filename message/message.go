@@ -515,6 +515,8 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			}
 
 			fmt.Printf("[DEBUG CustomFace] %+v\n", *elem.CustomFace)
+			fmt.Printf("[DEBUG CommonElem] %+v\n", *elem.CommonElem)
+			fmt.Printf("[DEBUG NotOnlineImage] %+v\n", *elem.NotOnlineImage)
 
 			var url string
 			if elem.CustomFace.OrigUrl.Unwrap() == "" {
