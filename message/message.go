@@ -515,8 +515,16 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			}
 
 			fmt.Printf("[DEBUG CustomFace] %+v\n", *elem.CustomFace)
-			fmt.Printf("[DEBUG CommonElem] %+v\n", *elem.CommonElem)
-			fmt.Printf("[DEBUG NotOnlineImage] %+v\n", *elem.NotOnlineImage)
+			if elem.CommonElem != nil {
+				fmt.Printf("[DEBUG CommonElem] %+v\n", *elem.CommonElem)
+			} else {
+				fmt.Println("[DEBUG CommonElem] <nil>")
+			}
+			if elem.NotOnlineImage != nil {
+				fmt.Printf("[DEBUG NotOnlineImage] %+v\n", *elem.NotOnlineImage)
+			} else {
+				fmt.Println("[DEBUG NotOnlineImage] <nil>")
+			}
 
 			var url string
 			if elem.CustomFace.OrigUrl.Unwrap() == "" {
