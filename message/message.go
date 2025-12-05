@@ -525,6 +525,8 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			} else {
 				fmt.Println("[DEBUG NotOnlineImage] <nil>")
 			}
+			// print whole elem
+			fmt.Printf("[DEBUG Elem] %+v\n", *elem)
 
 			var url string
 			if elem.CustomFace.OrigUrl.Unwrap() == "" {
