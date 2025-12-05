@@ -600,11 +600,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				rkey := img.PbReserve.Url.Unwrap()
 				fileID := img.DownloadPath.Unwrap()
 				url = fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s%s", fileID, rkey)
-				if GetRKey != nil {
-					if rkey := GetRKey(false); rkey != "" {
-						url += "&rkey=" + rkey
-					}
-				}
 			case img.OrigUrl.Unwrap() != "":
 				url = "https://multimedia.nt.qq.com.cn" + img.OrigUrl.Unwrap()
 			default:
