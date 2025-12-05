@@ -74,7 +74,7 @@ func NewGroupImage(id string, md5 []byte, fid int64, size, width, height, imageT
 		ImageType: imageType,
 		Width:     width,
 		Height:    height,
-		Url:       fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/1/0-0-%X/0?term=2", md5),
+		Url:       fmt.Sprintf("https://gchat.qpic.cn/download?appid=1407&fileid=%d", fid),
 	}
 }
 
