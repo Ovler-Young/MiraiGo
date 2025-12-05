@@ -13,14 +13,6 @@ import (
 	"github.com/Ovler-Young/MiraiGo/utils"
 )
 
-// RKeyUpdateCallback is called when rkey is extracted from a message
-// isGroup: true for group rkey (appid=1407), false for private rkey (appid=1406)
-type RKeyUpdateCallback func(rkey string, isGroup bool)
-
-// OnRKeyUpdate is a callback that gets invoked when rkey is extracted from message parsing
-// Set this from the client package to cache the rkey
-var OnRKeyUpdate RKeyUpdateCallback
-
 type IMessage interface {
 	GetElements() []IMessageElement
 	Chat() int64
@@ -696,10 +688,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				if img.Elem2.Data.Friend != nil {
 					rKeyRaw := img.Elem2.Data.Friend.RKey.Unwrap()
 					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
-					// Notify callback about extracted rkey
-					if OnRKeyUpdate != nil && rKey != "" {
-						OnRKeyUpdate(rKey, false)
-					}
 					// The ImgURL field is the correct source for the fileid
 					fileID := img.Elem1.Data.ImgURL.Unwrap()
 					// Construct the URL with the correct path and appid for friend images (1406).
@@ -715,10 +703,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				if img.Elem2.Data.Group != nil {
 					rKeyRaw := img.Elem2.Data.Group.RKey.Unwrap()
 					rKey := strings.Split(strings.TrimPrefix(rKeyRaw, "&rkey="), "&")[0]
-					// Notify callback about extracted rkey
-					if OnRKeyUpdate != nil && rKey != "" {
-						OnRKeyUpdate(rKey, true)
-					}
 					// The ImgURL field is the correct source for the fileid
 					fileID := img.Elem1.Data.ImgURL.Unwrap()
 					// Construct the URL with the correct path and appid for group images (1407).
