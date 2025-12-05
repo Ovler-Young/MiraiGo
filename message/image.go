@@ -63,9 +63,27 @@ const (
 	HotSearchImage  ImageBizType = 13
 )
 
+/* ------ Callbacks ------ */
+
+// GetRKeyCallback is a function type for retrieving cached rkey
+// isGroup: true for group rkey (appid=1407), false for private rkey (appid=1406)
+type GetRKeyCallback func(isGroup bool) string
+
+// GetRKey is a callback for retrieving cached rkey from client package
+// Set this from the client package to enable rkey in image URLs
+var GetRKey GetRKeyCallback
+
 /* ------ Implementations ------ */
 
 func NewGroupImage(id string, md5 []byte, fid int64, size, width, height, imageType int32) *GroupImageElement {
+	// Build URL with rkey if available
+	url := fmt.Sprintf("https://gchat.qpic.cn/download?appid=1407&fileid=%d", fid)
+	if GetRKey != nil {
+		if rkey := GetRKey(true); rkey != "" {
+			url += "&rkey=" + rkey
+		}
+	}
+
 	return &GroupImageElement{
 		ImageId:   id,
 		FileId:    fid,
@@ -74,7 +92,7 @@ func NewGroupImage(id string, md5 []byte, fid int64, size, width, height, imageT
 		ImageType: imageType,
 		Width:     width,
 		Height:    height,
-		Url:       fmt.Sprintf("https://gchat.qpic.cn/download?appid=1407&fileid=%d", fid),
+		Url:       url,
 	}
 }
 

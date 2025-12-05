@@ -71,6 +71,7 @@ type QQClient struct {
 	qwebSeq        atomic.Int64
 	sig            *auth.SigInfo
 	highwaySession *highway.Session
+	rkeyManager    *RKeyManager
 	// pwdFlag        bool
 	// timeDiff       int64
 
@@ -197,6 +198,7 @@ func NewClientMd5(uin int64, passwordMd5 [16]byte) *QQClient {
 		onlinePushCache: utils.NewCache[unit](time.Second * 15),
 		alive:           true,
 		highwaySession:  new(highway.Session),
+		rkeyManager:     NewRKeyManager(),
 	}
 
 	cli.transport = &network.Transport{Sig: cli.sig}
@@ -221,6 +223,11 @@ func (c *QQClient) version() *auth.AppVersion {
 
 func (c *QQClient) Device() *DeviceInfo {
 	return c.transport.Device
+}
+
+// RKeyManager returns the rkey manager for image URL construction
+func (c *QQClient) RKeyManager() *RKeyManager {
+	return c.rkeyManager
 }
 
 func (c *QQClient) UseDevice(info *auth.Device) {
