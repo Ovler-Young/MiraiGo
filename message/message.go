@@ -521,6 +521,9 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			if len(elem.CustomFace.Md5) == 0 {
 				continue
 			}
+			// DEBUG: Log entire elem (not just CustomFace)
+			fmt.Printf("[DEBUG elem] %+v\n", elem)
+
 			// Build URL using new download API format with FileId
 			fileId := elem.CustomFace.FileId.Unwrap()
 			var url string
@@ -612,6 +615,11 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				rkey := img.PbReserve.Url.Unwrap()
 				fileID := img.DownloadPath.Unwrap()
 				url = fmt.Sprintf("https://multimedia.nt.qq.com.cn/download?appid=1406&fileid=%s%s", fileID, rkey)
+				if GetRKey != nil {
+					if rkey := GetRKey(false); rkey != "" {
+						url += "&rkey=" + rkey
+					}
+				}
 			case img.OrigUrl.Unwrap() != "":
 				url = "https://multimedia.nt.qq.com.cn" + img.OrigUrl.Unwrap()
 			default:
