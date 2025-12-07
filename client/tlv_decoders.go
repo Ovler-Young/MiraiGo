@@ -7,6 +7,7 @@ import (
 
 	"github.com/Ovler-Young/MiraiGo/client/internal/tlv"
 	"github.com/Ovler-Young/MiraiGo/utils"
+	"github.com/RomiChan/protobuf/proto"
 
 	"github.com/Ovler-Young/MiraiGo/binary"
 )
@@ -127,6 +128,22 @@ func (c *QQClient) decodeT119(data, ek []byte) {
 	c.Nickname = nick
 	c.Age = age
 	c.Gender = gender
+
+	tlv543 := struct {
+		Field1 *struct {
+			Field2 *struct {
+				Uid proto.Option[string] `protobuf:"bytes,1,opt"`
+			} `protobuf:"bytes,11,opt"`
+		} `protobuf:"bytes,9,opt"`
+	}{}
+	if len(m[0x543]) != 0 {
+		if err := proto.Unmarshal(m[0x543], &tlv543); err != nil {
+			c.error("throw error when parsing tlv543: %v", err)
+			c.Uid = ""
+			return
+		}
+		c.Uid = tlv543.Field1.Field2.Uid.Unwrap()
+	}
 }
 
 // wtlogin.exchange_emp

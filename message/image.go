@@ -19,7 +19,7 @@ type GroupImageElement struct {
 	Height       int32
 	Md5          []byte
 	Url          string
-
+	Name         string
 	// EffectID show pic effect id.
 	EffectID int32
 	Flash    bool
@@ -32,8 +32,8 @@ type FriendImageElement struct {
 	Width   int32
 	Height  int32
 	Url     string
-
-	Flash bool
+	Name    string
+	Flash   bool
 }
 
 type GuildImageElement struct {

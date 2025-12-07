@@ -18,6 +18,8 @@ type VoiceElement struct {
 	Md5  []byte
 	Size int32
 	Url  string
+	FileId string
+	IsGroup bool
 
 	// --- sending ---
 	Data []byte
