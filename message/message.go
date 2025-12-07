@@ -509,63 +509,6 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 				res = append(res, NewText(content))
 			}
 		}
-		if elem.CustomFace != nil {
-			if len(elem.CustomFace.Md5) == 0 {
-				continue
-			}
-
-			fmt.Printf("[DEBUG CustomFace] %+v\n", *elem.CustomFace)
-			if elem.CommonElem != nil {
-				fmt.Printf("[DEBUG CommonElem] %+v\n", *elem.CommonElem)
-			} else {
-				fmt.Println("[DEBUG CommonElem] <nil>")
-			}
-			if elem.NotOnlineImage != nil {
-				fmt.Printf("[DEBUG NotOnlineImage] %+v\n", *elem.NotOnlineImage)
-			} else {
-				fmt.Println("[DEBUG NotOnlineImage] <nil>")
-			}
-			// print whole elem
-			fmt.Printf("[DEBUG Elem] %+v\n", *elem)
-
-			var url string
-			if elem.CustomFace.OrigUrl.Unwrap() == "" {
-				url = fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/0/0-0-%X/0?term=2", elem.CustomFace.Md5)
-			} else {
-				url = "https://gchat.qpic.cn" + elem.CustomFace.OrigUrl.Unwrap()
-			}
-			if strings.Contains(elem.CustomFace.OrigUrl.Unwrap(), "qmeet") {
-				res = append(res, &GuildImageElement{
-					FileId:   int64(elem.CustomFace.FileId.Unwrap()),
-					FilePath: elem.CustomFace.FilePath.Unwrap(),
-					Size:     elem.CustomFace.Size.Unwrap(),
-					Width:    elem.CustomFace.Width.Unwrap(),
-					Height:   elem.CustomFace.Height.Unwrap(),
-					Url:      url,
-					Md5:      elem.CustomFace.Md5,
-				})
-				continue
-			}
-			bizType := UnknownBizType
-			if len(elem.CustomFace.PbReserve) != 0 {
-				attr := new(msg.ResvAttr)
-				if proto.Unmarshal(elem.CustomFace.PbReserve, attr) == nil {
-					bizType = ImageBizType(attr.ImageBizType.Unwrap())
-				}
-			}
-			if !newImg {
-				res = append(res, &GroupImageElement{
-					FileId:       int64(elem.CustomFace.FileId.Unwrap()),
-					ImageId:      elem.CustomFace.FilePath.Unwrap(),
-					Size:         elem.CustomFace.Size.Unwrap(),
-					Width:        elem.CustomFace.Width.Unwrap(),
-					Height:       elem.CustomFace.Height.Unwrap(),
-					Url:          url,
-					ImageBizType: bizType,
-					Md5:          elem.CustomFace.Md5,
-				})
-			}
-		}
 		if elem.MarketFace != nil {
 			face := &MarketFaceElement{
 				Name:       utils.B2S(elem.MarketFace.FaceName),
@@ -722,6 +665,53 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 					})
 					newImg = true
 				}
+			}
+		}
+		if elem.CustomFace != nil {
+			if len(elem.CustomFace.Md5) == 0 {
+				continue
+			}
+
+			var url string
+			if elem.CustomFace.OrigUrl.Unwrap() == "" {
+				url = fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/0/0-0-%X/0?term=2", elem.CustomFace.Md5)
+				// for every elem's children, like commonElem, notOnlineImage, print their values
+				for _, child := range elem {
+					fmt.Printf("[DEBUG Child] %+v\n", child)
+				}
+			} else {
+				url = "https://gchat.qpic.cn" + elem.CustomFace.OrigUrl.Unwrap()
+			}
+			if strings.Contains(elem.CustomFace.OrigUrl.Unwrap(), "qmeet") {
+				res = append(res, &GuildImageElement{
+					FileId:   int64(elem.CustomFace.FileId.Unwrap()),
+					FilePath: elem.CustomFace.FilePath.Unwrap(),
+					Size:     elem.CustomFace.Size.Unwrap(),
+					Width:    elem.CustomFace.Width.Unwrap(),
+					Height:   elem.CustomFace.Height.Unwrap(),
+					Url:      url,
+					Md5:      elem.CustomFace.Md5,
+				})
+				continue
+			}
+			bizType := UnknownBizType
+			if len(elem.CustomFace.PbReserve) != 0 {
+				attr := new(msg.ResvAttr)
+				if proto.Unmarshal(elem.CustomFace.PbReserve, attr) == nil {
+					bizType = ImageBizType(attr.ImageBizType.Unwrap())
+				}
+			}
+			if !newImg {
+				res = append(res, &GroupImageElement{
+					FileId:       int64(elem.CustomFace.FileId.Unwrap()),
+					ImageId:      elem.CustomFace.FilePath.Unwrap(),
+					Size:         elem.CustomFace.Size.Unwrap(),
+					Width:        elem.CustomFace.Width.Unwrap(),
+					Height:       elem.CustomFace.Height.Unwrap(),
+					Url:          url,
+					ImageBizType: bizType,
+					Md5:          elem.CustomFace.Md5,
+				})
 			}
 		}
 	}
