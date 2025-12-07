@@ -675,10 +675,7 @@ func ParseMessageElems(elems []*msg.Elem) []IMessageElement {
 			var url string
 			if elem.CustomFace.OrigUrl.Unwrap() == "" {
 				url = fmt.Sprintf("https://gchat.qpic.cn/gchatpic_new/0/0-0-%X/0?term=2", elem.CustomFace.Md5)
-				// for every elem's children, like commonElem, notOnlineImage, print their values
-				for _, child := range elem {
-					fmt.Printf("[DEBUG Child] %+v\n", child)
-				}
+				fmt.Printf("%+v\n", elem)
 			} else {
 				url = "https://gchat.qpic.cn" + elem.CustomFace.OrigUrl.Unwrap()
 			}
